@@ -1,0 +1,50 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: check-yaml
+        args:
+          - --unsafe
+    -   id: check-toml
+    -   id: requirements-txt-fixer
+    -   id: check-added-large-files
+    -   id: detect-aws-credentials
+        args:
+          - --allow-missing-credentials
+    -   id: trailing-whitespace
+        exclude: "docs/operating/diagnose/known-errors.md"
+
+# black - code formatting - see configuration in pyproject.toml
+-   repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+    -   id: black
+        args: [--preview]  # to include formatting of strings
+        additional_dependencies: ['click==8.0.4']
+
+# Docstrings and code blocks formatting with blacken-docs and docformatter
+-   repo: https://github.com/myint/docformatter
+    rev: v1.5.0
+    hooks:
+    -   id: docformatter
+        args: [--in-place, --wrap-summaries=88]
+-   repo: https://github.com/asottile/blacken-docs
+    rev: 1.13.0
+    hooks:
+    -   id: blacken-docs
+
+# Ruff tests: see configuration in pyproject.toml to see which rules are included
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: 'v0.0.280'
+  hooks:
+    - id: ruff
+      args: [--fix, --exit-non-zero-on-fix]
+
+# Check for CRLF ending
+- repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.5.1
+  hooks:
+      - id: forbid-crlf
