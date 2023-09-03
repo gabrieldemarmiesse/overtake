@@ -30,17 +30,22 @@ class OvertakenFunctionRegistry(Generic[P, T]):
     @property
     def implementations(self) -> List[Tuple[Callable, inspect.Signature]]:
         if self._implementations is None:
-            self._implementations = []
-            overloaded_implementations = list(get_overloads(self.overtaken_function))
-            self.raise_if_no_implementations(overloaded_implementations)
-            for overloaded_implementation in overloaded_implementations:
-                self._implementations.append(
-                    (
-                        overloaded_implementation,
-                        inspect.signature(overloaded_implementation),
-                    )
-                )
+            self._implementations = self._find_implementations()
         return self._implementations
+
+    def _find_implementations(self) -> List[Tuple[Callable, inspect.Signature]]:
+        overloaded_implementations = list(get_overloads(self.overtaken_function))
+        self.raise_if_no_implementations(overloaded_implementations)
+
+        result = []
+        for overloaded_implementation in overloaded_implementations:
+            result.append(
+                (
+                    overloaded_implementation,
+                    inspect.signature(overloaded_implementation),
+                )
+            )
+        return result
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         incompatiblities = []
