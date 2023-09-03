@@ -1,30 +1,31 @@
+import inspect
 import sys
 import typing
-import inspect
-from typing import Callable
-from typing import TypeVar, Generic, List, Tuple, Union, Dict
+from typing import Callable, Dict, Generic, List, Tuple, TypeVar, Union
 
-import beartype.roar
 from beartype.door import die_if_unbearable
-
+import beartype.roar
 from typing_extensions import ParamSpec, get_overloads
 
 
 class CompatibleOverloadNotFoundError(Exception):
     pass
 
+
 class OverloadsNotFoundError(Exception):
     pass
 
 
-T = TypeVar('T')
-P = ParamSpec('P')
+T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class OvertakenFunctionRegistry(Generic[P, T]):
     def __init__(self, overtaken_function: Callable[P, T]):
         self.overtaken_function = overtaken_function
-        self._implementations: Union[List[Tuple[Callable, inspect.Signature]], None] = None
+        self._implementations: Union[List[Tuple[Callable, inspect.Signature]], None] = (
+            None
+        )
 
     @property
     def implementations(self) -> List[Tuple[Callable, inspect.Signature]]:
@@ -33,7 +34,12 @@ class OvertakenFunctionRegistry(Generic[P, T]):
             overloaded_implementations = list(get_overloads(self.overtaken_function))
             self.raise_if_no_implementations(overloaded_implementations)
             for overloaded_implementation in overloaded_implementations:
-                self._implementations.append((overloaded_implementation, inspect.signature(overloaded_implementation)))
+                self._implementations.append(
+                    (
+                        overloaded_implementation,
+                        inspect.signature(overloaded_implementation),
+                    )
+                )
         return self._implementations
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
@@ -49,9 +55,13 @@ class OvertakenFunctionRegistry(Generic[P, T]):
         else:
             self.raise_full_incompatibility(incompatiblities)
 
-    def raise_full_incompatibility(self, incompatibilities: List[str]) -> typing.NoReturn:
-        full_message = (f"No compatible overload found for function {self.overtaken_function}, "
-                        f"here is why: ")
+    def raise_full_incompatibility(
+        self, incompatibilities: List[str]
+    ) -> typing.NoReturn:
+        full_message = (
+            f"No compatible overload found for function {self.overtaken_function}, "
+            "here is why: "
+        )
         for incompatibility in incompatibilities:
             full_message += "\n"
             full_message += incompatibility
@@ -63,27 +73,29 @@ class OvertakenFunctionRegistry(Generic[P, T]):
 
         if sys.version_info < (3, 11):
             additional_help = (
-                "Did you use 'from typing import overload'? If this is the case, "
-                "use 'from typing_extensions import overload' instead. \n"
-                "Overtake cannot find the @overload from typing before Python 3.11."
-                "When you upgrade to Python 3.11, you'll be able to use 'from typing import overload'."
+                "Did you use 'from typing import overload'? If this is the case, use"
+                " 'from typing_extensions import overload' instead. \nOvertake cannot"
+                " find the @overload from typing before Python 3.11.When you upgrade to"
+                " Python 3.11, you'll be able to use 'from typing import overload'."
             )
         else:
             additional_help = "Did you forget to use '@overload'?"
         raise OverloadsNotFoundError(
-            f"Overtake could not find the overloads for the function {self.overtaken_function}. " + additional_help
+            "Overtake could not find the overloads for the function"
+            f" {self.overtaken_function}. "
+            + additional_help
         )
 
 
-def explain_incompatibility_for_one_overload(signature: inspect.Signature, reason: str) -> str:
+def explain_incompatibility_for_one_overload(
+    signature: inspect.Signature, reason: str
+) -> str:
     return f"Incompatible with {signature} because {reason}"
 
 
 def find_incompatibility(
-        args: Tuple[object, ...],
-        kwargs: Dict[str, object],
-        signature: inspect.Signature
-    ) -> Union[str, None]:
+    args: Tuple[object, ...], kwargs: Dict[str, object], signature: inspect.Signature
+) -> Union[str, None]:
     try:
         bound_arguments = signature.bind(*args, **kwargs)
     except TypeError as e:
@@ -96,8 +108,8 @@ def find_incompatibility(
         try:
             die_if_unbearable(argument_value, type_hint)
         except beartype.roar.BeartypeDoorHintViolation as e:
-            return f"There is a type hint mismatch for argument {argument_name}: " + str(e)
+            return (
+                f"There is a type hint mismatch for argument {argument_name}: " + str(e)
+            )
 
     return None
-
-

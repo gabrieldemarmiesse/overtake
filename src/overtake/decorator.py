@@ -1,13 +1,12 @@
-from typing import Callable
 from functools import wraps
-from typing import TypeVar
+from typing import Callable, TypeVar
+
 from typing_extensions import ParamSpec
 
 from overtake.overtake_class import OvertakenFunctionRegistry
 
-
-T = TypeVar('T')
-P = ParamSpec('P')
+T = TypeVar("T")
+P = ParamSpec("P")
 
 
 def overtake(func: Callable[P, T]) -> Callable[P, T]:
