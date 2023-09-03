@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from typing import Callable
 from functools import wraps
 from typing import TypeVar
 from typing_extensions import ParamSpec

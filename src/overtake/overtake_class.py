@@ -1,8 +1,7 @@
 import sys
 import typing
 import inspect
-from collections.abc import Callable
-
+from typing import Callable
 from typing import TypeVar, Generic, List, Tuple, Union, Dict
 
 import beartype.roar

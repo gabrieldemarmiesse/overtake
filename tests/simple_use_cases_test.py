@@ -1,8 +1,9 @@
 from overtake import overtake
-from typing import overload
 
 
 def test_one_argument():
+    from typing_extensions import overload
+
     @overload
     def my_function(my_var: int) -> int:
         return my_var + 1
