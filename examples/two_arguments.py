@@ -1,10 +1,10 @@
 from overtake import overtake
-from typing import overload
+from typing_extensions import overload
 
 
 @overload
 def my_function(my_var: int, my_second: float) -> int:  # type: ignore
-    print("THis is int")
+    print("This is int")
     return my_var + 1
 
 

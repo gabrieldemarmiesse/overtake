@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import TypeVar, ParamSpec
+from typing import TypeVar
+from typing_extensions import ParamSpec
 
 from overtake.overtake_class import OvertakenFunctionRegistry
 
