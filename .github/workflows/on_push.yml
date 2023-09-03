@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install requirements-dev.lock
+        run: pip install -r requirements-dev.lock
       - name: Run mypy
         run: mypy ./src ./examples
 
@@ -28,6 +28,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install dependencies
-        run: pip install requirements-dev.lock
+        run: pip install -r requirements-dev.lock
       - name: Run pyright
         run: pyright ./src ./examples
