@@ -6,6 +6,10 @@ from overtake import overtake
 from typing_extensions import overload
 
 
+class Something(str):
+    pass
+
+
 @overload
 def write_text_to_file(text: str) -> Path:  # type: ignore
     random_file_name = f"/tmp/{random.randint(0, 10)}.txt"
@@ -33,9 +37,10 @@ def write_text_to_file(text, file=None):
     ...
 
 
-print(write_text_to_file("hello world"))
+print(write_text_to_file(Something("hello world"), Something("dodo")))
 # /tmp/4.txt
 print(write_text_to_file("hello world", "/tmp/some-file.txt"))
+print(write_text_to_file("hello world", "dodo"))
 # /tmp/some-file.txt
 print(write_text_to_file("hello world", Path("/tmp/some-file.txt")))
 # /tmp/some-file.txt
