@@ -49,6 +49,10 @@ baseline_time = timeit.timeit(
 )
 
 print("Baseline:", baseline_time)
+
+# trigger first time computation
+overtake_function(big_list_int, "", "", (1,), 2, big_list_int)
+
 overtake_time = timeit.timeit(
     "overtake_function(big_list_int, '', '', (1,), 2, big_list_int)",
     number=1000,
