@@ -58,8 +58,11 @@ It's also supported as well by type checkers (Mypy, Pyright, etc...) so you don'
 ### More advanced examples.
 
 We can show you here more pattern that are possible. Basically `if isinstance(..., ...)` might be your cue that
-`overtake` might help you write clearer code. Let's write a function that returns the number of days since January 1st:
+`overtake` might help you write clearer code.
 
+#### Recursivity
+
+Let's write a function that returns the number of days since January 1st:
 
 ```python
 from typing import overload
@@ -122,6 +125,7 @@ print(count_words(["hello world", "other piece of text"]))
 # 6
 ```
 
+#### Different output types
 
 It's also possible to have different output types, like with `@overload`
 
@@ -154,18 +158,20 @@ print(convert_to_int(["88", "42", "84"]))
 ```
 
 
+#### Leveraging optional arguments
+
 It can avoid some annoying uses of `if ... is None:`, you can specify different number of arguments (but the order must match!).
 
 For this example, let's say that you want the user to be able to write some text in any kind of file.
 If the file is not provided, we create a temporary file.
 We must accept any input for the file. A `str`, a `pathlib.Path`, a file-like object too. Or nothing (random file).
 
-
 ```python
 from typing import overload
 from pathlib import Path
 import io
 import random
+
 from overtake import overtake
 
 
