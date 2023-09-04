@@ -14,7 +14,7 @@ def convert_to_int(input_value: str) -> int:  # type: ignore
 
 @overtake
 def convert_to_int(input_value):
-    raise NotImplementedError
+    ...
 
 
 print(convert_to_int("88"))

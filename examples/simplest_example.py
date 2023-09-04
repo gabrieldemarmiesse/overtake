@@ -18,7 +18,7 @@ def count_words(input_value: str) -> int:  # type: ignore
 
 @overtake
 def count_words(input_value):
-    raise NotImplementedError
+    ...
 
 
 print(count_words(["hello world", "other piece of text"]))

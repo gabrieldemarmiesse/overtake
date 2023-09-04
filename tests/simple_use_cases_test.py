@@ -17,7 +17,7 @@ def test_one_argument():
 
     @overtake
     def my_function(my_var):
-        raise NotImplementedError
+        ...
 
     assert my_function("5153") == "5153dododo"
     assert my_function(3) == 4
@@ -34,7 +34,7 @@ def test_multiple_arguments():
 
     @overtake
     def my_function(unchanged_var, my_var):
-        raise NotImplementedError
+        ...
 
     assert my_function([], "5153") == "5153dododo"
     assert my_function([], 3) == 4
@@ -51,7 +51,7 @@ def test_keyword_arguments():
 
     @overtake
     def my_function(unchanged_var, my_var):
-        raise NotImplementedError
+        ...
 
     assert my_function(my_var="5153", unchanged_var=[]) == "5153dododo"
     assert my_function(my_var=3, unchanged_var=[]) == 4
@@ -68,7 +68,7 @@ def test_variable_number_of_arguments():
 
     @overtake
     def my_function(my_var, my_second=4.1):
-        raise NotImplementedError
+        ...
 
     assert my_function("base", my_second=5.2) == "base new chars"
     assert my_function(3) == 4
@@ -85,7 +85,7 @@ def test_variable_number_of_arguments_same_types():
 
     @overtake
     def my_function(my_var, my_second=None):
-        raise NotImplementedError
+        ...
 
     assert isinstance(my_function(3), int)
     assert isinstance(my_function(3, 2.5), float)
@@ -107,7 +107,7 @@ def test_regular_typing_overload():
 
     @overtake
     def my_function(my_var):
-        raise NotImplementedError
+        ...
 
     assert my_function("5153") == "5153dododo"
     assert my_function(3) == 4

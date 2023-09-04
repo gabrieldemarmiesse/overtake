@@ -38,7 +38,7 @@ def count_words(input_value: str) -> int:
 
 @overtake
 def count_words(input_value):
-    raise NotImplementedError
+    ...
 
 
 print(count_words("Python is fun!"))
@@ -84,7 +84,7 @@ def days_this_year(current_date: str) -> int:
 
 @overtake
 def days_this_year(current_date):
-    raise NotImplementedError
+    ...
 
 
 print(days_this_year(date(2023, 8, 15)))
@@ -116,7 +116,7 @@ def count_words(input_value: str) -> int:
 
 @overtake
 def count_words(input_value):
-    raise NotImplementedError
+    ...
 
 
 print(count_words("Python is fun!"))
@@ -148,7 +148,7 @@ def convert_to_int(input_value: str) -> int:
 
 @overtake
 def convert_to_int(input_value):
-    raise NotImplementedError
+    ...
 
 
 print(convert_to_int("88"))
@@ -199,7 +199,7 @@ def write_text_to_file(text: str, file: io.TextIOBase) -> None:
 
 @overtake
 def write_text_to_file(text, file=None):
-    raise NotImplementedError
+    ...
 
 
 print(write_text_to_file("hello world"))

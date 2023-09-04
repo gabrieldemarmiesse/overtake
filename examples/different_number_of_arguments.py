@@ -30,8 +30,7 @@ def write_text_to_file(text: str, file: io.TextIOBase) -> None:  # type: ignore
 
 @overtake
 def write_text_to_file(text, file=None):
-    """Write."""
-    raise NotImplementedError
+    ...
 
 
 print(write_text_to_file("hello world"))

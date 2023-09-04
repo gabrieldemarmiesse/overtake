@@ -17,7 +17,7 @@ def days_this_year(current_date: str) -> int:  # type: ignore
 
 @overtake
 def days_this_year(current_date):
-    raise NotImplementedError
+    ...
 
 
 print(days_this_year(date(2023, 8, 15)))

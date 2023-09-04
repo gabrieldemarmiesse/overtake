@@ -17,7 +17,7 @@ def my_function(my_var: str, my_second: float) -> str:  # type: ignore
 
 @overtake
 def my_function(my_var, my_second):
-    raise NotImplementedError
+    ...
 
 
 assert my_function("5153", my_second=5.2) == "5153dododo"

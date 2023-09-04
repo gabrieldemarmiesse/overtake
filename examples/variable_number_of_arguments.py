@@ -16,7 +16,7 @@ def my_function(my_var: str, my_second: float = 4.1) -> str:  # type: ignore
 
 @overtake
 def my_function(my_var, my_second=4.1):
-    raise NotImplementedError
+    ...
 
 
 a = my_function("5153", my_second=5.2)
