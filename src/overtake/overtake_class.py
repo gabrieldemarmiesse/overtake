@@ -48,17 +48,17 @@ class OvertakenFunctionRegistry(Generic[P, T]):
         return result
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
-        incompatiblities = []
+        incompatibilities = []
         for overloaded_implementation, signature in self.implementations:
             incompatibility = find_incompatibility(args, kwargs, signature)
             if incompatibility is None:
                 return overloaded_implementation(*args, **kwargs)
             else:
-                incompatiblities.append(
+                incompatibilities.append(
                     explain_incompatibility_for_one_overload(signature, incompatibility)
                 )
         else:
-            self.raise_full_incompatibility(incompatiblities)
+            self.raise_full_incompatibility(incompatibilities)
 
     def raise_full_incompatibility(
         self, incompatibilities: List[str]

@@ -60,12 +60,10 @@ def test_keyword_arguments():
 def test_variable_number_of_arguments():
     @typing_extensions.overload
     def my_function(my_var: int) -> int:
-        print("THis is int")
         return my_var + 1
 
     @typing_extensions.overload
     def my_function(my_var: str, my_second: float = 4.1) -> str:
-        print("this is str")
         return my_var + " new chars"
 
     @overtake
@@ -74,6 +72,23 @@ def test_variable_number_of_arguments():
 
     assert my_function("base", my_second=5.2) == "base new chars"
     assert my_function(3) == 4
+
+
+def test_variable_number_of_arguments_same_types():
+    @typing_extensions.overload
+    def my_function(my_var: int) -> int:
+        return my_var
+
+    @typing_extensions.overload
+    def my_function(my_var: int, my_second: float) -> float:
+        return my_var + my_second
+
+    @overtake
+    def my_function(my_var, my_second=None):
+        raise NotImplementedError
+
+    assert isinstance(my_function(3), int)
+    assert isinstance(my_function(3, 2.5), float)
 
 
 @pytest.mark.skipif(

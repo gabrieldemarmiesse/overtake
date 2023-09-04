@@ -1,5 +1,6 @@
+from typing import overload
+
 from overtake import overtake
-from typing_extensions import overload
 
 
 @overload
@@ -20,5 +21,4 @@ def my_function(my_var, my_second):
 
 
 assert my_function("5153", my_second=5.2) == "5153dododo"
-
 assert my_function(3, my_second=5.2) == 4
