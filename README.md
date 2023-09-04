@@ -1,11 +1,11 @@
 # Overtake
 
-### How to install?
+## How to install?
 ```bash
 pip install overtake
 ```
 
-### What is Overtake?
+## What is Overtake?
 Overtake is a small library made to push `@typing.overload` even further.
 `@typing.overload` just defines signatures, so that type checkers know what type hints
 are available when calling a function.
@@ -57,12 +57,12 @@ It's also supported as well by type checkers (Mypy, Pyright, etc...) so you don'
 
 Overtake follow closely the Mypy guide on `@typing.overload`: https://mypy.readthedocs.io/en/stable/more_types.html#function-overloading
 
-### More advanced examples.
+## More advanced examples.
 
 We can show you here more pattern that are possible. Basically `if isinstance(..., ...)` might be your cue that
 `overtake` might help you write clearer code.
 
-#### Recursivity
+### Recursivity
 
 Let's write a function that returns the number of days since January 1st:
 
@@ -127,7 +127,7 @@ print(count_words(["hello world", "other piece of text"]))
 # 6
 ```
 
-#### Different output types
+### Different output types
 
 It's also possible to have different output types, like with `@overload`
 
@@ -160,7 +160,7 @@ print(convert_to_int(["88", "42", "84"]))
 ```
 
 
-#### Leveraging optional arguments
+### Leveraging optional arguments
 
 It can avoid some annoying uses of `if ... is None:`, you can specify different number of arguments (but the order must match!).
 
@@ -212,4 +212,42 @@ print(write_text_to_file("hello world", Path("/tmp/some-file.txt")))
 # /tmp/some-file.txt
 print(write_text_to_file("hello world", io.StringIO()))
 # None (we didn't write in a file on disk)
+```
+
+## Recommendations
+
+We recommend using a type checker of your choice (Mypy, Pyright, etc...) so that the type checker catches
+invalid usages of `@overload`. Even though it's not mandatory, it's helpful to catch mistakes with `@overload` early.
+
+## Compatibility with Pyright
+
+Pyright has a small compatibility issue, you might get the following error:
+```
+error: "my_function" is marked as overload, but it includes an implementation
+The body of a function overload should be "..."
+```
+This can be fixed without disabling type checking on calls and function bodies by adding `# type: ignore`
+next to the overloaded function signatures. Here is a small example:
+
+```python
+from datetime import date
+
+from overtake import overtake
+from typing_extensions import overload
+
+
+@overload
+def days_this_year(current_date: date) -> int:  # type: ignore
+    delta = current_date - date(2023, 1, 1)
+    return delta.days
+
+
+@overload
+def days_this_year(current_date: str) -> int:  # type: ignore
+    return days_this_year(date.fromisoformat(current_date))
+
+
+@overtake
+def days_this_year(current_date):
+    ...
 ```
