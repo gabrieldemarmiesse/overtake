@@ -24,16 +24,16 @@ from overtake import overtake
 
 
 @overload
+def count_words(input_value: str) -> int:
+    return len(input_value.split(" "))
+
+
+@overload
 def count_words(input_value: list[str]) -> int:
     total = 0
     for text in input_value:
         total += len(text.split(" "))
     return total
-
-
-@overload
-def count_words(input_value: str) -> int:
-    return len(input_value.split(" "))
 
 
 @overtake
@@ -102,16 +102,16 @@ from overtake import overtake
 
 
 @overload
+def count_words(input_value: str) -> int:
+    return len(input_value.split(" "))
+
+
+@overload
 def count_words(input_value: list[str]) -> int:
     total = 0
     for text in input_value:
         total += count_words(text)
     return total
-
-
-@overload
-def count_words(input_value: str) -> int:
-    return len(input_value.split(" "))
 
 
 @overtake
@@ -137,13 +137,13 @@ from overtake import overtake
 
 
 @overload
-def convert_to_int(input_value: list[str]) -> list[int]:
-    return [int(x) for x in input_value]
+def convert_to_int(input_value: str) -> int:
+    return int(input_value)
 
 
 @overload
-def convert_to_int(input_value: str) -> int:
-    return int(input_value)
+def convert_to_int(input_value: list[str]) -> list[int]:
+    return [int(x) for x in input_value]
 
 
 @overtake
@@ -176,14 +176,8 @@ from overtake import overtake
 
 
 @overload
-def write_text_to_file(text: str) -> Path:
-    random_file_name = f"/tmp/{random.randint(0, 10)}.txt"
-    return write_text_to_file(text, random_file_name)
-
-
-@overload
-def write_text_to_file(text: str, file: str) -> Path:
-    return write_text_to_file(text, Path(file))
+def write_text_to_file(text: str, file: io.TextIOBase) -> None:
+    file.write(text)
 
 
 @overload
@@ -193,8 +187,14 @@ def write_text_to_file(text: str, file: Path) -> Path:
 
 
 @overload
-def write_text_to_file(text: str, file: io.TextIOBase) -> None:
-    file.write(text)
+def write_text_to_file(text: str, file: str) -> Path:
+    return write_text_to_file(text, Path(file))
+
+
+@overload
+def write_text_to_file(text: str) -> Path:
+    random_file_name = f"/tmp/{random.randint(0, 10)}.txt"
+    return write_text_to_file(text, random_file_name)
 
 
 @overtake
