@@ -64,7 +64,7 @@ class OvertakenFunctionRegistry(Generic[P, T]):
         self, incompatibilities: List[str]
     ) -> typing.NoReturn:
         full_message = (
-            f"No compatible overload found for function {self.overtaken_function}, "
+            f"No compatible overload found for function '{self.overtaken_function}', "
             "here is why: "
         )
         for incompatibility in incompatibilities:
@@ -95,7 +95,7 @@ class OvertakenFunctionRegistry(Generic[P, T]):
 def explain_incompatibility_for_one_overload(
     signature: inspect.Signature, reason: str
 ) -> str:
-    return f"Incompatible with {signature} because {reason}"
+    return f"Incompatible with '{signature}' because {reason}"
 
 
 def find_incompatibility(
