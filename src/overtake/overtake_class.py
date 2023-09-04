@@ -1,10 +1,9 @@
 import inspect
-import sys
 import typing
-from typing import Callable, Dict, Generic, List, Set, Tuple, TypeVar, Union
+from typing import Callable, Dict, Generic, List, Optional, Set, Tuple, TypeVar, Union
 
 from beartype.door import is_bearable
-from typing_extensions import ParamSpec, get_overloads
+from typing_extensions import ParamSpec
 
 from overtake.incompatibility_reasons import (
     FullIncompatibilityReason,
@@ -13,13 +12,10 @@ from overtake.incompatibility_reasons import (
     IncompatibilityReason,
     IncompatibilityTypeHint,
 )
+from overtake.lazy_inspection import LazyOverloadsInspection
 
 
 class CompatibleOverloadNotFoundError(Exception):
-    pass
-
-
-class OverloadsNotFoundError(Exception):
     pass
 
 
@@ -30,60 +26,21 @@ P = ParamSpec("P")
 class OvertakenFunctionRegistry(Generic[P, T]):
     def __init__(self, overtaken_function: Callable[P, T]):
         self.overtaken_function = overtaken_function
-        self._implementations: Union[List[Tuple[Callable, inspect.Signature]], None] = (
-            None
-        )
-        self._arguments_to_check: typing.Optional[Set[str]] = None
+        self._lazy_inspection: Optional[LazyOverloadsInspection] = None
+
+    @property
+    def inspection_results(self) -> LazyOverloadsInspection:
+        if self._lazy_inspection is None:
+            self._lazy_inspection = LazyOverloadsInspection(self.overtaken_function)
+        return self._lazy_inspection
 
     @property
     def implementations(self) -> List[Tuple[Callable, inspect.Signature]]:
-        if self._implementations is None:
-            self._initialize()
-        return self._implementations
+        return self.inspection_results.implementations
 
     @property
     def arguments_to_check(self) -> Set[str]:
-        if self._arguments_to_check is None:
-            self._initialize()
-        return self._arguments_to_check
-
-    def _initialize(self):
-        self._implementations = self._find_implementations()
-        self._arguments_to_check = self._find_arguments_to_check()
-        print(self._arguments_to_check)
-
-    def _find_implementations(self) -> List[Tuple[Callable, inspect.Signature]]:
-        overloaded_implementations = list(get_overloads(self.overtaken_function))
-        self.raise_if_no_implementations(overloaded_implementations)
-
-        result = []
-        for overloaded_implementation in overloaded_implementations:
-            result.append(
-                (
-                    overloaded_implementation,
-                    inspect.signature(overloaded_implementation),
-                )
-            )
-        return result
-
-    def _find_arguments_to_check(self) -> Set[str]:
-        """We optimise by writing arguments that have types that are changing.
-
-        In some special cases, there might be no types change at all,
-        meaning the dispatching is decided by the number of arguments
-        provided.
-        """
-        arguments_to_check = set()
-        found_types = {}
-        for overloaded_implementation, signature in self.implementations:
-            for argument_name, argument in signature.parameters.items():
-                if argument_name not in found_types:
-                    found_types[argument_name] = argument.annotation
-                else:
-                    if argument.annotation != found_types[argument_name]:
-                        # it changed, let's check it later
-                        arguments_to_check.add(argument_name)
-        return arguments_to_check
+        return self.inspection_results.arguments_to_check
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> T:
         incompatibilities = []
@@ -99,31 +56,12 @@ class OvertakenFunctionRegistry(Generic[P, T]):
             self.raise_full_incompatibility(incompatibilities)
 
     def raise_full_incompatibility(
-        self, incompatibilities: List[IncompatibilityReason]
+        self, incompatibilities: List[IncompatibilityOverload]
     ) -> typing.NoReturn:
         error_message = str(
             FullIncompatibilityReason(self.overtaken_function, incompatibilities)
         )
         raise CompatibleOverloadNotFoundError(error_message)
-
-    def raise_if_no_implementations(self, implementations: List[Callable]) -> None:
-        if implementations != []:
-            return
-
-        if sys.version_info < (3, 11):
-            additional_help = (
-                "Did you use 'from typing import overload'? If this is the case, use"
-                " 'from typing_extensions import overload' instead. \nOvertake cannot"
-                " find the @overload from typing before Python 3.11.When you upgrade to"
-                " Python 3.11, you'll be able to use 'from typing import overload'."
-            )
-        else:
-            additional_help = "Did you forget to use '@overload'?"
-        raise OverloadsNotFoundError(
-            "Overtake could not find the overloads for the function"
-            f" {self.overtaken_function}. "
-            + additional_help
-        )
 
     def find_incompatibility(
         self,

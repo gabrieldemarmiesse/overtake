@@ -60,7 +60,7 @@ class FullIncompatibilityReason(IncompatibilityReason):
     def __init__(
         self,
         overtaken_function: Callable,
-        signatures_incompatibilities: List[IncompatibilityReason],
+        signatures_incompatibilities: List[IncompatibilityOverload],
     ):
         self.overtaken_function = overtaken_function
         self.signatures_incompatibilities = signatures_incompatibilities
@@ -72,5 +72,5 @@ class FullIncompatibilityReason(IncompatibilityReason):
         )
         for incompatibility in self.signatures_incompatibilities:
             full_message += "\n"
-            full_message += incompatibility
+            full_message += str(incompatibility)
         return full_message
