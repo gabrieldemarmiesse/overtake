@@ -55,6 +55,8 @@ It works for every signature supported by [`@typing.overload`](https://docs.pyth
 This pattern is supported by IDEs (Pycharm, VSCode, etc...) so autocompletion will work well.
 It's also supported as well by type checkers (Mypy, Pyright, etc...) so you don't need to compromise on type safety 😁
 
+Overtake follow closely the Mypy guide on `@typing.overload`: https://mypy.readthedocs.io/en/stable/more_types.html#function-overloading
+
 ### More advanced examples.
 
 We can show you here more pattern that are possible. Basically `if isinstance(..., ...)` might be your cue that

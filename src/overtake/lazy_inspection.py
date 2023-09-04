@@ -1,3 +1,5 @@
+"""This file contains every computation done at the first call of the function."""
+
 import inspect
 import sys
 from typing import Callable, List, Set, Tuple
