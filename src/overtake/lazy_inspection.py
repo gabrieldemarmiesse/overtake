@@ -6,6 +6,8 @@ from typing import Callable, List, Set, Tuple
 
 from typing_extensions import get_overloads
 
+from overtake.display_objects import get_fully_qualified_name
+
 
 class OverloadsNotFoundError(Exception):
     pass
@@ -77,7 +79,3 @@ def _find_arguments_to_check(
                     # it changed, let's check it later
                     arguments_to_check.add(argument_name)
     return arguments_to_check
-
-
-def get_fully_qualified_name(obj: Callable) -> str:
-    return f"{obj.__module__}.{obj.__qualname__}"

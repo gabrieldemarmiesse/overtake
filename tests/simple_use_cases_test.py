@@ -1,7 +1,7 @@
 import sys
 from typing import List
 
-from overtake import OverloadsNotFoundError, overtake
+from overtake import CompatibleOverloadNotFoundError, OverloadsNotFoundError, overtake
 import pytest
 import typing_extensions
 
@@ -141,4 +141,64 @@ def test_regular_typing_overload():
         " typing_extensions import overload' instead. \nOvertake cannot find the"
         " @overload from typing before Python 3.11. When you upgrade to Python 3.11,"
         " you'll be able to use 'from typing import overload'."
+    )
+
+
+@pytest.mark.skipif(
+    sys.version_info < (3, 11),
+    reason="We want to make sure we don't give wrong hints about the error",
+)
+def test_regular_typing_overload():
+    def my_function(my_var: int) -> int:
+        return my_var + 1
+
+    def my_function(my_var: str) -> str:
+        return my_var + "dododo"
+
+    @overtake
+    def my_function(my_var):
+        ...
+
+    with pytest.raises(OverloadsNotFoundError) as err:
+        my_function("dodo")
+    assert (
+        str(err.value)
+        == "Overtake could not find the overloads for the function"
+        " 'simple_use_cases_test.test_regular_typing_overload.<locals>.my_function'."
+        " Did you forget to use '@overload'?"
+    )
+
+
+def test_regular_typing_overload():
+    from typing_extensions import overload
+
+    @overload
+    def my_function(my_var: int) -> int:
+        return my_var
+
+    @overload
+    def my_function(my_var: int, second_var: float) -> int:
+        return my_var
+
+    @overload
+    def my_function(my_var: str, second_var: float) -> str:
+        return my_var
+
+    @overtake
+    def my_function(my_var, second_var=None):
+        ...
+
+    with pytest.raises(CompatibleOverloadNotFoundError) as err:
+        my_function(438.15, 48.5)
+    assert (
+        str(err.value)
+        == "No compatible overload found for function"
+        " 'simple_use_cases_test.test_regular_typing_overload.<locals>.my_function',"
+        " here is why:\nIncompatible with '(my_var: int) -> int' because too many"
+        " positional arguments\nIncompatible with '(my_var: int, second_var: float)"
+        " -> int' because There is a type hint mismatch for argument my_var: Object"
+        " 438.15 violates type hint <class 'int'>, as float 438.15 not instance of"
+        " int.\nIncompatible with '(my_var: str, second_var: float) -> str' because"
+        " There is a type hint mismatch for argument my_var: Object 438.15 violates"
+        " type hint <class 'str'>, as float 438.15 not instance of str."
     )

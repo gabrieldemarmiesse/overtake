@@ -5,6 +5,8 @@ from typing import Callable, List
 import beartype.door
 import beartype.roar
 
+from overtake.display_objects import get_fully_qualified_name
+
 
 class IncompatibilityReason(ABC):
     """We lazy-load all incompatibility reasons to make sure we are as fast as possible,
@@ -67,8 +69,9 @@ class FullIncompatibilityReason(IncompatibilityReason):
 
     def __str__(self):
         full_message = (
-            f"No compatible overload found for function '{self.overtaken_function}', "
-            "here is why: "
+            "No compatible overload found for function "
+            f"'{get_fully_qualified_name(self.overtaken_function)}', "
+            "here is why:"
         )
         for incompatibility in self.signatures_incompatibilities:
             full_message += "\n"
