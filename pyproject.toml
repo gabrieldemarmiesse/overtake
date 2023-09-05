@@ -1,6 +1,6 @@
 [project]
 name = "overtake"
-version = "0.2.0"
+version = "0.2.1"
 description = "A runtime implementation of @typing.overload."
 authors = [
     { name = "Gabriel de Marmiesse", email = "gabrieldemarmiesse@gmail.com" }
@@ -25,6 +25,7 @@ dev-dependencies = [
     "pyright>=1.1.325",
     "pre-commit>=3.4.0",
     "line_profiler>=4.1.1",
+    "build>=1.0.0",
 ]
 
 [tool.hatch.metadata]
