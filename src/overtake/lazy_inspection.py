@@ -45,13 +45,14 @@ def raise_if_no_implementations(
         additional_help = (
             "Did you use 'from typing import overload'? If this is the case, use"
             " 'from typing_extensions import overload' instead. \nOvertake cannot"
-            " find the @overload from typing before Python 3.11.When you upgrade to"
+            " find the @overload from typing before Python 3.11. When you upgrade to"
             " Python 3.11, you'll be able to use 'from typing import overload'."
         )
     else:
         additional_help = "Did you forget to use '@overload'?"
     raise OverloadsNotFoundError(
-        f"Overtake could not find the overloads for the function {overtaken_function}. "
+        "Overtake could not find the overloads for the function"
+        f" '{get_fully_qualified_name(overtaken_function)}'. "
         + additional_help
     )
 
@@ -76,3 +77,7 @@ def _find_arguments_to_check(
                     # it changed, let's check it later
                     arguments_to_check.add(argument_name)
     return arguments_to_check
+
+
+def get_fully_qualified_name(obj: Callable) -> str:
+    return f"{obj.__module__}.{obj.__qualname__}"

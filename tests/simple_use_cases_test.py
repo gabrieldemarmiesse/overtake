@@ -1,7 +1,7 @@
 import sys
 from typing import List
 
-from overtake import overtake
+from overtake import OverloadsNotFoundError, overtake
 import pytest
 import typing_extensions
 
@@ -111,3 +111,34 @@ def test_regular_typing_overload():
 
     assert my_function("5153") == "5153dododo"
     assert my_function(3) == 4
+
+
+@pytest.mark.skipif(
+    sys.version_info >= (3, 11), reason="typing.overloads supported after 3.11"
+)
+def test_regular_typing_overload():
+    from typing import overload
+
+    @overload
+    def my_function(my_var: int) -> int:
+        return my_var + 1
+
+    @overload
+    def my_function(my_var: str) -> str:
+        return my_var + "dododo"
+
+    @overtake
+    def my_function(my_var):
+        ...
+
+    with pytest.raises(OverloadsNotFoundError) as err:
+        my_function("dodo")
+    assert (
+        str(err.value)
+        == "Overtake could not find the overloads for the function"
+        " 'simple_use_cases_test.test_regular_typing_overload.<locals>.my_function'."
+        " Did you use 'from typing import overload'? If this is the case, use 'from"
+        " typing_extensions import overload' instead. \nOvertake cannot find the"
+        " @overload from typing before Python 3.11. When you upgrade to Python 3.11,"
+        " you'll be able to use 'from typing import overload'."
+    )
