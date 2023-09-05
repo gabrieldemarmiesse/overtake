@@ -1,6 +1,6 @@
 [project]
 name = "overtake"
-version = "0.2.1"
+version = "0.2.2"
 description = "A runtime implementation of @typing.overload."
 authors = [
     { name = "Gabriel de Marmiesse", email = "gabrieldemarmiesse@gmail.com" }
