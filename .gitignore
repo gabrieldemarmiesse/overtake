@@ -152,5 +152,5 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-
 /main_benchmark.py.lprof
+/.python-version
