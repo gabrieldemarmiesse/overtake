@@ -214,6 +214,42 @@ print(write_text_to_file("hello world", io.StringIO()))
 # None (we didn't write in a file on disk)
 ```
 
+### Leveraging keyword arguments
+
+You can use this paradigm to force the user to use less arguments than the number defined in the function.
+Here is an example where you'll looking for the balance of a user. You can provide the user id, or the user name,
+but not both.
+
+```python
+from overtake import overtake
+from typing import overload
+
+
+@overload
+def find_user_balance(name: str) -> int:
+    return 40
+
+
+@overload
+def find_user_balance(user_id: int) -> int:
+    return 50
+
+
+@overtake
+def find_user_balance(*, user_id=None, name=None):
+    ...
+
+
+print(find_user_balance(name="Julie"))
+# 40
+print(find_user_balance(user_id=14))
+# 50
+```
+
+In this situation, Overtake saves you quite some time. You don't have to check that
+`user_id` and `name`are both provided, and don't have to check that none of them has been provided.
+Overtake does this for you!
+
 ## Recommendations
 
 We recommend using a type checker of your choice (Mypy, Pyright, etc...) so that the type checker catches
@@ -251,3 +287,9 @@ def days_this_year(current_date: str) -> int:  # type: ignore
 def days_this_year(current_date):
     ...
 ```
+
+To solve this limitation in the long run (Mypy might one day raise the same type of errors),
+a draft PEP has been made. Don't hesitate to give feedback in the discussion!
+* [The PEP to offically support multiple dispatch](https://github.com/gabrieldemarmiesse/PEP-draft-multiple-dispatcher)
+* [Discourse discussion](https://discuss.python.org/t/multiple-dispatch-based-on-typing-overload/26197)
+

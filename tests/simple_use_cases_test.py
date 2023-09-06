@@ -136,7 +136,7 @@ def test_regular_typing_overload_with_old_python_versions():
     assert (
         str(err.value)
         == "Overtake could not find the overloads for the function"
-        " 'simple_use_cases_test.test_regular_typing_overload.<locals>.my_function'."
+        " 'simple_use_cases_test.test_regular_typing_overload_with_old_python_versions.<locals>.my_function'."
         " Did you use 'from typing import overload'? If this is the case, use 'from"
         " typing_extensions import overload' instead. \nOvertake cannot find the"
         " @overload from typing before Python 3.11. When you upgrade to Python 3.11,"
@@ -202,3 +202,22 @@ def test_no_compatible_overload_found():
         " There is a type hint mismatch for argument my_var: Object 438.15 violates"
         " type hint <class 'str'>, as float 438.15 not instance of str."
     )
+
+
+def test_force_single_argument():
+    from typing_extensions import overload
+
+    @overload
+    def find_user_balance(name: str) -> int:
+        return 40
+
+    @overload
+    def find_user_balance(user_id: int) -> int:
+        return 50
+
+    @overtake
+    def find_user_balance(*, user_id=None, name=None):
+        ...
+
+    assert find_user_balance(name="Julie") == 40
+    assert find_user_balance(user_id=14) == 50
