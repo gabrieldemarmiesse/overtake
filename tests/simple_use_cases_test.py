@@ -116,7 +116,7 @@ def test_regular_typing_overload():
 @pytest.mark.skipif(
     sys.version_info >= (3, 11), reason="typing.overloads supported after 3.11"
 )
-def test_regular_typing_overload():
+def test_regular_typing_overload_with_old_python_versions():
     from typing import overload
 
     @overload
@@ -148,7 +148,7 @@ def test_regular_typing_overload():
     sys.version_info < (3, 11),
     reason="We want to make sure we don't give wrong hints about the error",
 )
-def test_regular_typing_overload():
+def test_forgotten_overload():
     def my_function(my_var: int) -> int:
         return my_var + 1
 
@@ -164,12 +164,12 @@ def test_regular_typing_overload():
     assert (
         str(err.value)
         == "Overtake could not find the overloads for the function"
-        " 'simple_use_cases_test.test_regular_typing_overload.<locals>.my_function'."
+        " 'simple_use_cases_test.test_forgotten_overload.<locals>.my_function'."
         " Did you forget to use '@overload'?"
     )
 
 
-def test_regular_typing_overload():
+def test_no_compatible_overload_found():
     from typing_extensions import overload
 
     @overload
@@ -193,7 +193,7 @@ def test_regular_typing_overload():
     assert (
         str(err.value)
         == "No compatible overload found for function"
-        " 'simple_use_cases_test.test_regular_typing_overload.<locals>.my_function',"
+        " 'simple_use_cases_test.test_no_compatible_overload_found.<locals>.my_function',"
         " here is why:\nIncompatible with '(my_var: int) -> int' because too many"
         " positional arguments\nIncompatible with '(my_var: int, second_var: float)"
         " -> int' because There is a type hint mismatch for argument my_var: Object"
