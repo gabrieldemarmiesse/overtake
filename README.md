@@ -6,6 +6,25 @@ pip install overtake
 ```
 
 ## What is Overtake?
+
+Have you ever dreamed of declaring the same function multiple times?
+```python
+def count_words(arg: str) -> int:
+    return len(arg.split())
+
+
+def count_words(arg: list[str]) -> int:
+    return sum(len(text.split()) for text in arg)
+
+
+print(count_words("one two three!"))
+# 3
+print(count_words(["one two", "three four five six"]))
+# 6
+```
+
+Well you are at the right place!
+
 Overtake is a small library made to push `@typing.overload` even further.
 `@typing.overload` just defines signatures, so that type checkers know what type hints
 are available when calling a function.
@@ -24,16 +43,13 @@ from overtake import overtake
 
 
 @overload
-def count_words(input_value: str) -> int:
-    return len(input_value.split(" "))
+def count_words(arg: str) -> int:
+    return len(arg.split())
 
 
 @overload
-def count_words(input_value: list[str]) -> int:
-    total = 0
-    for text in input_value:
-        total += len(text.split(" "))
-    return total
+def count_words(arg: list[str]) -> int:
+    return sum(len(text.split()) for text in arg)
 
 
 @overtake
@@ -41,9 +57,9 @@ def count_words(input_value):
     ...
 
 
-print(count_words("Python is fun!"))
+print(count_words("one two three!"))
 # 3
-print(count_words(["hello world", "other piece of text"]))
+print(count_words(["one two", "three four five six"]))
 # 6
 ```
 
@@ -105,15 +121,12 @@ from overtake import overtake
 
 @overload
 def count_words(input_value: str) -> int:
-    return len(input_value.split(" "))
+    return len(input_value.split())
 
 
 @overload
 def count_words(input_value: list[str]) -> int:
-    total = 0
-    for text in input_value:
-        total += count_words(text)
-    return total
+    return sum(count_words(text) for text in input_value)
 
 
 @overtake
@@ -121,9 +134,9 @@ def count_words(input_value):
     ...
 
 
-print(count_words("Python is fun!"))
+print(count_words("one two three!"))
 # 3
-print(count_words(["hello world", "other piece of text"]))
+print(count_words(["one two", "three four five six"]))
 # 6
 ```
 

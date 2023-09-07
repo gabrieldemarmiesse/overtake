@@ -4,15 +4,12 @@ from typing_extensions import overload
 
 @overload
 def count_words(input_value: list[str]) -> int:  # type: ignore
-    total = 0
-    for text in input_value:
-        total += count_words(text)
-    return total
+    return sum(count_words(text) for text in input_value)
 
 
 @overload
 def count_words(input_value: str) -> int:  # type: ignore
-    return len(input_value.split(" "))
+    return len(input_value.split())
 
 
 @overtake
