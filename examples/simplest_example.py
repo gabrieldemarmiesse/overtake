@@ -15,7 +15,7 @@ def count_words(arg: list[str]) -> int:  # type: ignore
 
 
 @overtake
-def count_words(input_value):
+def count_words(arg):
     ...
 
 

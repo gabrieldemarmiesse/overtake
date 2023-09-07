@@ -88,7 +88,7 @@ class OvertakenFunctionRegistry(Generic[P, T]):
                 if typing.get_origin(type_hint) == Unpack:
                     type_hint = typing.get_args(type_hint)[0]
                 else:
-                    type_hint = Dict[str, type_hint]
+                    type_hint = Dict[str, type_hint]  # type: ignore
 
             if type_hint == inspect.Parameter.empty:
                 continue
