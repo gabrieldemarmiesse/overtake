@@ -3,7 +3,7 @@ import typing
 from typing import Callable, Dict, Generic, List, Optional, Set, Tuple, TypeVar, Union
 
 from beartype.door import is_bearable
-from typing_extensions import ParamSpec
+from typing_extensions import ParamSpec, Unpack
 
 from overtake.incompatibility_reasons import (
     FullIncompatibilityReason,
@@ -85,7 +85,7 @@ class OvertakenFunctionRegistry(Generic[P, T]):
                 # say that we ignore it.
                 type_hint = Tuple[type_hint, ...]
             elif parameter.kind == inspect.Parameter.VAR_KEYWORD:
-                if typing.get_origin(type_hint) == typing.Unpack:
+                if typing.get_origin(type_hint) == Unpack:
                     type_hint = typing.get_args(type_hint)[0]
                 else:
                     type_hint = Dict[str, type_hint]

@@ -1,8 +1,9 @@
-from typing import TypedDict, Unpack
+from typing import TypedDict
 
 from overtake import overtake
 import pytest
 import typing_extensions
+from typing_extensions import Unpack
 
 
 def test_args():
