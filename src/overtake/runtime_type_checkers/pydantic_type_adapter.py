@@ -27,6 +27,7 @@ def check_type(
         pydantic.TypeAdapter(type_hint).validate_python(argument_value, strict=True)
     except pydantic.ValidationError as e:
         return IncompatibilityTypeHintPydantic(str(e), argument_name)
+    return None
 
 
 def verify_availability():
