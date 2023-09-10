@@ -65,7 +65,6 @@ print(count_words(["one two", "three four five six"]))
 
 Overtake will analyse the types and provided arguments to call the right implementation.
 
-It works for every type hint supported by the awesome [beartype]().
 It works for every signature supported by [`@typing.overload`](https://docs.python.org/3/library/typing.html#typing.overload)
 
 This pattern is supported by IDEs (Pycharm, VSCode, etc...) so autocompletion will work well.
@@ -230,7 +229,7 @@ print(write_text_to_file("hello world", io.StringIO()))
 ### Leveraging keyword arguments
 
 You can use this paradigm to force the user to use less arguments than the number defined in the function.
-Here is an example where you'll looking for the balance of a user. You can provide the user id, or the user name,
+Here is an example where you're looking for the balance of a user. You can provide the user id, or the user's name,
 but not both.
 
 ```python
@@ -274,7 +273,7 @@ invalid usages of `@overload`. Even though it's not mandatory, it's helpful to c
 Runtime type checking in Python is difficult. Actually, very difficult. A few libraries provide this functionality, like
 [beartype](https://beartype.readthedocs.io/en/latest/) or [pydantic](https://docs.pydantic.dev/latest/).
 
-To avoid having to install any dependency, `overtake` can use `isinstance` as the default "basic" type checker.
+To avoid having to install any dependency, `overtake` can use `isinstance` as the default `"basic"` type checker.
 Note that this will only work with types that are classes. For example, it won't work with `list[str]`.
 
 To handle more complicated types, you should use
