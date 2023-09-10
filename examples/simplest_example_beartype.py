@@ -20,7 +20,7 @@ def is_this_string_big(arg: LengthyString) -> str:  # type: ignore
 
 
 @overtake(runtime_type_checker="beartype")
-def is_this_string_big(arg):
+def is_this_string_big(arg):  # type: ignore
     ...
 
 

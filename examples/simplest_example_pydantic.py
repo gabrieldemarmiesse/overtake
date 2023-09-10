@@ -14,7 +14,7 @@ def connect(arg: MongoDsn) -> str:  # type: ignore
 
 
 @overtake(runtime_type_checker="pydantic")
-def connect(arg):
+def connect(arg):  # type: ignore
     ...
 
 
