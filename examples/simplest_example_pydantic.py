@@ -18,7 +18,7 @@ def connect(arg):
     ...
 
 
-print(connect("rediss://:pass@localhost"))
+print(connect("rediss://:pass@localhost"))  # type: ignore
 # Connected to redis!
-print(connect("mongodb://mongodb0.example.com:27017"))
+print(connect("mongodb://mongodb0.example.com:27017"))  # type: ignore
 # Connected to MongoDB!
