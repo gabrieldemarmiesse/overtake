@@ -2,7 +2,6 @@ import inspect
 import typing
 from typing import Callable, Dict, Generic, List, Optional, Set, Tuple, TypeVar, Union
 
-from beartype.door import is_bearable
 from typing_extensions import ParamSpec, Unpack
 
 from overtake.incompatibility_reasons import (
@@ -10,9 +9,9 @@ from overtake.incompatibility_reasons import (
     IncompatibilityBind,
     IncompatibilityOverload,
     IncompatibilityReason,
-    IncompatibilityTypeHint,
 )
 from overtake.lazy_inspection import LazyOverloadsInspection
+from overtake.runtime_type_checkers.umbrella import check_type
 
 
 class CompatibleOverloadNotFoundError(Exception):
@@ -93,9 +92,12 @@ class OvertakenFunctionRegistry(Generic[P, T]):
             if type_hint == inspect.Parameter.empty:
                 continue
 
-            if is_bearable(argument_value, type_hint):
+            incompatibility_reason = check_type(
+                argument_value, type_hint, argument_name
+            )
+            if incompatibility_reason is None:
                 continue
             else:
-                return IncompatibilityTypeHint(argument_name, argument_value, type_hint)
+                return incompatibility_reason
 
         return None
