@@ -24,7 +24,7 @@ def check_type(
     argument_value: object, type_hint: object, argument_name
 ) -> Optional[IncompatibilityReason]:
     try:
-        if isinstance(argument_value, type_hint):
+        if isinstance(argument_value, type_hint):  # type: ignore
             return None
         else:
             return IncompatibilityTypeHintBasic(

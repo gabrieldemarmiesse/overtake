@@ -6,7 +6,7 @@ try:
     import beartype.door
     import beartype.roar
 except ImportError:
-    beartype = None
+    beartype = None  # type: ignore
 
 
 class IncompatibilityTypeHintBeartype(IncompatibilityReason):
@@ -20,8 +20,8 @@ class IncompatibilityTypeHintBeartype(IncompatibilityReason):
 
     def __str__(self):
         try:
-            beartype.door.die_if_unbearable(self.value, self.type_hint)
-        except beartype.roar.BeartypeDoorHintViolation as e:
+            beartype.door.die_if_unbearable(self.value, self.type_hint)  # type: ignore
+        except beartype.roar.BeartypeDoorHintViolation as e:  # type: ignore
             return (
                 f"There is a type hint mismatch for argument {self.argument_name}: "
                 + str(e)
@@ -31,7 +31,7 @@ class IncompatibilityTypeHintBeartype(IncompatibilityReason):
 def check_type(
     argument_value: object, type_hint: object, argument_name: str
 ) -> Optional[IncompatibilityReason]:
-    if beartype.door.is_bearable(argument_value, type_hint):
+    if beartype.door.is_bearable(argument_value, type_hint):  # type: ignore
         return None
     else:
         return IncompatibilityTypeHintBeartype(argument_value, type_hint, argument_name)
