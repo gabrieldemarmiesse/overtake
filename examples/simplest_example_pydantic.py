@@ -1,7 +1,6 @@
-from typing import overload
-
 from overtake import overtake
 from pydantic import MongoDsn, RedisDsn
+from typing_extensions import overload
 
 
 @overload
