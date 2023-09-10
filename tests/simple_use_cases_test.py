@@ -15,7 +15,7 @@ def test_one_argument():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var):
         ...
 
@@ -32,7 +32,7 @@ def test_multiple_arguments():
     def my_function(unchanged_var: List[str], my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(unchanged_var, my_var):
         ...
 
@@ -49,7 +49,7 @@ def test_keyword_arguments():
     def my_function(unchanged_var: List[str], my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(unchanged_var, my_var):
         ...
 
@@ -66,7 +66,7 @@ def test_variable_number_of_arguments():
     def my_function(my_var: str, my_second: float = 4.1) -> str:
         return my_var + " new chars"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var, my_second=4.1):
         ...
 
@@ -83,7 +83,7 @@ def test_variable_number_of_arguments_same_types():
     def my_function(my_var: int, my_second: float) -> float:
         return my_var + my_second
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var, my_second=None):
         ...
 
@@ -105,7 +105,7 @@ def test_regular_typing_overload():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var):
         ...
 
@@ -127,7 +127,7 @@ def test_regular_typing_overload_with_old_python_versions():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var):
         ...
 
@@ -155,7 +155,7 @@ def test_forgotten_overload():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var):
         ...
 
@@ -184,7 +184,7 @@ def test_no_compatible_overload_found():
     def my_function(my_var: str, second_var: float) -> str:
         return my_var
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(my_var, second_var=None):
         ...
 
@@ -215,7 +215,7 @@ def test_force_single_argument():
     def find_user_balance(user_id: int) -> int:
         return 50
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def find_user_balance(*, user_id=None, name=None):
         ...
 

@@ -11,7 +11,7 @@ from overtake.incompatibility_reasons import (
     IncompatibilityReason,
 )
 from overtake.lazy_inspection import LazyOverloadsInspection
-from overtake.runtime_type_checkers.umbrella import check_type
+from overtake.runtime_type_checkers.umbrella import AVAILABLE_TYPE_CHECKERS, check_type
 
 
 class CompatibleOverloadNotFoundError(Exception):
@@ -23,9 +23,14 @@ P = ParamSpec("P")
 
 
 class OvertakenFunctionRegistry(Generic[P, T]):
-    def __init__(self, overtaken_function: Callable[P, T]):
+    def __init__(
+        self,
+        overtaken_function: Callable[P, T],
+        runtime_type_checker: AVAILABLE_TYPE_CHECKERS,
+    ):
         self.overtaken_function = overtaken_function
         self._lazy_inspection: Optional[LazyOverloadsInspection] = None
+        self.runtime_type_checker: AVAILABLE_TYPE_CHECKERS = runtime_type_checker
 
     @property
     def inspection_results(self) -> LazyOverloadsInspection:
@@ -93,7 +98,7 @@ class OvertakenFunctionRegistry(Generic[P, T]):
                 continue
 
             incompatibility_reason = check_type(
-                argument_value, type_hint, argument_name
+                argument_value, type_hint, argument_name, self.runtime_type_checker
             )
             if incompatibility_reason is None:
                 continue

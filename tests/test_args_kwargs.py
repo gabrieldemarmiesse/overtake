@@ -15,7 +15,7 @@ def test_args():
     def my_function(*args: str) -> str:
         return "".join(args)
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(*args):
         ...
 
@@ -38,7 +38,7 @@ def test_kwargs():
     def my_function(**kwargs: str) -> str:
         return "".join(kwargs.values())
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(**kwargs):
         ...
 
@@ -69,7 +69,7 @@ def test_kwargs_with_typedict():
     def my_function(**kwargs: Unpack[MyDict2]) -> str:
         return kwargs["c"]
 
-    @overtake
+    @overtake(runtime_type_checker="beartype")
     def my_function(**kwargs):
         ...
 
