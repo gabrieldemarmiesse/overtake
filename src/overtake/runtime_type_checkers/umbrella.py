@@ -14,11 +14,15 @@ def check_type(
     runtime_type_checker: AVAILABLE_TYPE_CHECKERS,
 ) -> Optional[IncompatibilityReason]:
     if runtime_type_checker == "basic":
-        # Beartype is not installed
         return overtake.runtime_type_checkers.basic.check_type(
             argument_value, type_hint, argument_name
         )
     elif runtime_type_checker == "beartype":
+        if overtake.runtime_type_checkers.beartype_is_bearable.beartype is None:
+            raise RuntimeError(
+                "You have used @overtake(runtime_type_checker='beartype') but beartype"
+                " is not installed on your system."
+            )
         return overtake.runtime_type_checkers.beartype_is_bearable.check_type(
             argument_value, type_hint, argument_name
         )
