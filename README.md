@@ -52,7 +52,7 @@ def count_words(arg: list[str]) -> int:
     return sum(len(text.split()) for text in arg)
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def count_words(arg):
     ...
 
@@ -65,7 +65,7 @@ print(count_words(["one two", "three four five six"]))
 
 Overtake will analyse the types and provided arguments to call the right implementation.
 
-It works for every type hint supported by the awesome [beartype](https://beartype.readthedocs.io/en/latest/).
+It works for every type hint supported by the awesome [beartype]().
 It works for every signature supported by [`@typing.overload`](https://docs.python.org/3/library/typing.html#typing.overload)
 
 This pattern is supported by IDEs (Pycharm, VSCode, etc...) so autocompletion will work well.
@@ -129,7 +129,7 @@ def count_words(input_value: list[str]) -> int:
     return sum(count_words(text) for text in input_value)
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def count_words(input_value):
     ...
 
@@ -161,7 +161,7 @@ def convert_to_int(input_value: list[str]) -> list[int]:
     return [int(x) for x in input_value]
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def convert_to_int(input_value):
     ...
 
@@ -212,7 +212,7 @@ def write_text_to_file(text: str) -> Path:
     return write_text_to_file(text, random_file_name)
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def write_text_to_file(text, file=None):
     ...
 
@@ -267,6 +267,29 @@ Overtake does this for you!
 
 We recommend using a type checker of your choice (Mypy, Pyright, etc...) so that the type checker catches
 invalid usages of `@overload`. Even though it's not mandatory, it's helpful to catch mistakes with `@overload` early.
+
+
+## The argument `runtime_type_checker`
+
+Runtime type checking in Python is difficult. Actually, very difficult. A few libraries provide this functionality, like
+[beartype](https://beartype.readthedocs.io/en/latest/) or [pydantic](https://docs.pydantic.dev/latest/).
+
+To avoid having to install any dependency, `overtake` can use `isinstance` as the default "basic" type checker.
+Note that this will only work with types that are classes. For example, it won't work with `list[str]`.
+
+To handle more complicated types, you should use
+
+```python
+@overtake(runtime_type_checker="beartype")
+def find_user_balance(*, user_id=None, name=None):
+    ...
+```
+or
+```python
+@overtake(runtime_type_checker="pydantic")
+def find_user_balance(*, user_id=None, name=None):
+    ...
+```
 
 ## Compatibility with Pyright
 

@@ -11,16 +11,16 @@ P = ParamSpec("P")
 
 
 @overload
-def overtake(check_types_with: AVAILABLE_TYPE_CHECKERS) -> Callable:
+def overtake(func: Callable[P, T], /) -> Callable[P, T]:
     ...
 
 
 @overload
-def overtake(func: Callable[P, T]) -> Callable[P, T]:
+def overtake(*, runtime_type_checker: AVAILABLE_TYPE_CHECKERS = "basic") -> Callable:
     ...
 
 
-def overtake(func=None, *, runtime_type_checker: AVAILABLE_TYPE_CHECKERS = "basic"):
+def overtake(func=None, /, *, runtime_type_checker: AVAILABLE_TYPE_CHECKERS = "basic"):
     if func is None:
         return lambda f: make_registry_and_return_wrapper(
             f, runtime_type_checker=runtime_type_checker
