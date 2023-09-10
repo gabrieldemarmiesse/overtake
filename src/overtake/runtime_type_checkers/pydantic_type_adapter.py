@@ -24,8 +24,8 @@ def check_type(
     argument_value: object, type_hint: object, argument_name: str
 ) -> Optional[IncompatibilityReason]:
     try:
-        pydantic.TypeAdapter(type_hint).validate_python(argument_value, strict=True)
-    except pydantic.ValidationError as e:
+        pydantic.TypeAdapter(type_hint).validate_python(argument_value, strict=True)  # type: ignore
+    except pydantic.ValidationError as e:  # type: ignore
         return IncompatibilityTypeHintPydantic(str(e), argument_name)
     return None
 

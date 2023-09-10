@@ -290,6 +290,25 @@ def find_user_balance(*, user_id=None, name=None):
     ...
 ```
 
+####  What `runtime_type_checker` do I need? There are so many choices!!!
+
+First of all, don't pick any (`"basic"` will be used by default) and see if it works.
+If the types you are using are too complicated,
+overtake will raise an error and tell you to use another `runtime_type_checker`.
+
+Then you have the choice between `"beartype"` and `"pydantic"`. Ask yourself the question,
+"Do I need beartype-specific types? Like [beartype's validators](https://beartype.readthedocs.io/en/latest/api_vale/)?"
+If yes, use beartype.
+
+If not, ask yourself the question
+"Do I need Pydantic's specific types? Like [Pydantic's urls or custom types](https://docs.pydantic.dev/latest/usage/types/custom/#custom-data-types)?"
+
+If you are still undecided after this, you should use beartype as it's faster (validate in O(1)), but beware,
+you might get silent errors for unsupported types, and it might be really unpleasant. Pydantic might be slower, but you'll
+get errors when using an unsupported type. So it's safer.
+
+Both are really cool libraries, I encourage any curious mind to go read those docs!
+
 ## Compatibility with Pyright
 
 Pyright has a small compatibility issue, you might get the following error:
