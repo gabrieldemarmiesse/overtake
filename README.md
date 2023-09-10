@@ -304,10 +304,83 @@ If not, ask yourself the question
 "Do I need Pydantic's specific types? Like [Pydantic's urls or custom types](https://docs.pydantic.dev/latest/usage/types/custom/#custom-data-types)?"
 
 If you are still undecided after this, you should use beartype as it's faster (validate in O(1)), but beware,
-you might get silent errors for unsupported types, and it might be really unpleasant. Pydantic might be slower, but you'll
-get errors when using an unsupported type. So it's safer.
+you might get silent errors for unsupported types, and it might be really unpleasant.
+See [this issue](https://github.com/beartype/beartype/issues/279).
+Pydantic might be slower, but you'll get errors when using an unsupported type. So it's safer.
 
 Both are really cool libraries, I encourage any curious mind to go read those docs!
+We recommend you install those libs with `pip install overtake[beartype]` or `pip install overtake[pydantic]`.
+
+#### What cool stuff can I do with the Beartype type checker?
+
+I was waiting for you to ask. Lo and behold!
+
+```python
+from overtake import overtake
+from typing import overload, Annotated
+from beartype.vale import Is
+
+# Type hint matching only strings with lengths ranging [4, 40].
+LengthyString = Annotated[str, Is[lambda text: 4 <= len(text) < 40]]
+
+# Type hint matching only strings with lengths ranging [0, 4].
+ShortString = Annotated[str, Is[lambda text: 0 <= len(text) < 4]]
+
+
+@overload
+def is_this_string_big(arg: ShortString) -> str:
+    return "This is a short string!"
+
+
+@overload
+def is_this_string_big(arg: LengthyString) -> str:
+    return "This is a very long string"
+
+
+@overtake(runtime_type_checker="beartype")
+def is_this_string_big(arg):
+    ...
+
+
+print(is_this_string_big("Hi!"))
+# This is a short string!
+print(is_this_string_big("No one expects the spanish inquisition!"))
+# This is a very long string
+```
+
+Do you even need `if` statements anymore? One can wonder.
+
+#### What cool stuff can I do with the Pydantic type checker?
+
+You can have fun with their custom types!
+
+```python
+from typing import overload
+
+from overtake import overtake
+from pydantic import MongoDsn, RedisDsn
+
+
+@overload
+def connect(arg: RedisDsn) -> str:
+    return "Connected to redis!"
+
+
+@overload
+def connect(arg: MongoDsn) -> str:
+    return "Connected to MongoDB!"
+
+
+@overtake(runtime_type_checker="pydantic")
+def connect(arg):
+    ...
+
+
+print(connect("rediss://:pass@localhost"))
+# Connected to redis!
+print(connect("mongodb://mongodb0.example.com:27017"))
+# Connected to MongoDB!
+```
 
 ## Compatibility with Pyright
 

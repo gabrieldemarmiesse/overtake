@@ -5,7 +5,7 @@ import overtake.runtime_type_checkers.basic
 import overtake.runtime_type_checkers.beartype_is_bearable
 import overtake.runtime_type_checkers.pydantic_type_adapter
 
-AVAILABLE_TYPE_CHECKERS = Literal["basic", "beartype"]
+AVAILABLE_TYPE_CHECKERS = Literal["basic", "beartype", "pydantic"]
 
 
 def check_type(
