@@ -1,12 +1,14 @@
 from typing import TypedDict
 
 from overtake import overtake
+from overtake.runtime_type_checkers.umbrella import AVAILABLE_TYPE_CHECKERS
 import pytest
 import typing_extensions
 from typing_extensions import Unpack
 
 
-def test_args():
+@pytest.mark.parametrize("runtime_type_checker", ["beartype", "pydantic"])
+def test_args(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     @typing_extensions.overload
     def my_function(*args: int) -> int:
         return sum(args)
@@ -15,7 +17,7 @@ def test_args():
     def my_function(*args: str) -> str:
         return "".join(args)
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(*args):
         ...
 

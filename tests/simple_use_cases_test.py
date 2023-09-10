@@ -2,11 +2,13 @@ import sys
 from typing import List
 
 from overtake import CompatibleOverloadNotFoundError, OverloadsNotFoundError, overtake
+from overtake.runtime_type_checkers.umbrella import AVAILABLE_TYPE_CHECKERS
 import pytest
 import typing_extensions
 
 
-def test_one_argument():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_one_argument(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     @typing_extensions.overload
     def my_function(my_var: int) -> int:
         return my_var + 1
@@ -15,7 +17,7 @@ def test_one_argument():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(my_var):
         ...
 
@@ -23,7 +25,8 @@ def test_one_argument():
     assert my_function(3) == 4
 
 
-def test_multiple_arguments():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_multiple_arguments(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     @typing_extensions.overload
     def my_function(unchanged_var: List[str], my_var: int) -> int:
         return my_var + 1
@@ -32,7 +35,7 @@ def test_multiple_arguments():
     def my_function(unchanged_var: List[str], my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(unchanged_var, my_var):
         ...
 
@@ -40,7 +43,8 @@ def test_multiple_arguments():
     assert my_function([], 3) == 4
 
 
-def test_keyword_arguments():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_keyword_arguments(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     @typing_extensions.overload
     def my_function(unchanged_var: List[str], my_var: int) -> int:
         return my_var + 1
@@ -49,7 +53,7 @@ def test_keyword_arguments():
     def my_function(unchanged_var: List[str], my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(unchanged_var, my_var):
         ...
 
@@ -57,7 +61,8 @@ def test_keyword_arguments():
     assert my_function(my_var=3, unchanged_var=[]) == 4
 
 
-def test_variable_number_of_arguments():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_variable_number_of_arguments(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     @typing_extensions.overload
     def my_function(my_var: int) -> int:
         return my_var + 1
@@ -66,7 +71,7 @@ def test_variable_number_of_arguments():
     def my_function(my_var: str, my_second: float = 4.1) -> str:
         return my_var + " new chars"
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(my_var, my_second=4.1):
         ...
 
@@ -74,7 +79,10 @@ def test_variable_number_of_arguments():
     assert my_function(3) == 4
 
 
-def test_variable_number_of_arguments_same_types():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_variable_number_of_arguments_same_types(
+    runtime_type_checker: AVAILABLE_TYPE_CHECKERS,
+):
     @typing_extensions.overload
     def my_function(my_var: int) -> int:
         return my_var
@@ -83,7 +91,7 @@ def test_variable_number_of_arguments_same_types():
     def my_function(my_var: int, my_second: float) -> float:
         return my_var + my_second
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(my_var, my_second=None):
         ...
 
@@ -94,7 +102,8 @@ def test_variable_number_of_arguments_same_types():
 @pytest.mark.skipif(
     sys.version_info < (3, 11), reason="typing.overload available in 3.11"
 )
-def test_regular_typing_overload():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_regular_typing_overload(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     from typing import overload
 
     @overload
@@ -105,7 +114,7 @@ def test_regular_typing_overload():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(my_var):
         ...
 
@@ -116,7 +125,10 @@ def test_regular_typing_overload():
 @pytest.mark.skipif(
     sys.version_info >= (3, 11), reason="typing.overloads supported after 3.11"
 )
-def test_regular_typing_overload_with_old_python_versions():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_regular_typing_overload_with_old_python_versions(
+    runtime_type_checker: AVAILABLE_TYPE_CHECKERS,
+):
     from typing import overload
 
     @overload
@@ -127,7 +139,7 @@ def test_regular_typing_overload_with_old_python_versions():
     def my_function(my_var: str) -> str:
         return my_var + "dododo"
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def my_function(my_var):
         ...
 
@@ -148,7 +160,8 @@ def test_regular_typing_overload_with_old_python_versions():
     sys.version_info < (3, 11),
     reason="We want to make sure we don't give wrong hints about the error",
 )
-def test_forgotten_overload():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_forgotten_overload(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     def my_function(my_var: int) -> int:
         return my_var + 1
 
@@ -204,7 +217,8 @@ def test_no_compatible_overload_found():
     )
 
 
-def test_force_single_argument():
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_force_single_argument(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     from typing_extensions import overload
 
     @overload
@@ -215,7 +229,7 @@ def test_force_single_argument():
     def find_user_balance(user_id: int) -> int:
         return 50
 
-    @overtake(runtime_type_checker="beartype")
+    @overtake(runtime_type_checker=runtime_type_checker)
     def find_user_balance(*, user_id=None, name=None):
         ...
 

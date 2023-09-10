@@ -3,6 +3,7 @@ from typing import Literal, Optional
 from overtake.incompatibility_reasons import IncompatibilityReason
 import overtake.runtime_type_checkers.basic
 import overtake.runtime_type_checkers.beartype_is_bearable
+import overtake.runtime_type_checkers.pydantic_type_adapter
 
 AVAILABLE_TYPE_CHECKERS = Literal["basic", "beartype"]
 
@@ -18,12 +19,13 @@ def check_type(
             argument_value, type_hint, argument_name
         )
     elif runtime_type_checker == "beartype":
-        if overtake.runtime_type_checkers.beartype_is_bearable.beartype is None:
-            raise RuntimeError(
-                "You have used @overtake(runtime_type_checker='beartype') but beartype"
-                " is not installed on your system."
-            )
+        overtake.runtime_type_checkers.beartype_is_bearable.verify_availability()
         return overtake.runtime_type_checkers.beartype_is_bearable.check_type(
+            argument_value, type_hint, argument_name
+        )
+    elif runtime_type_checker == "pydantic":
+        overtake.runtime_type_checkers.pydantic_type_adapter.verify_availability()
+        return overtake.runtime_type_checkers.pydantic_type_adapter.check_type(
             argument_value, type_hint, argument_name
         )
     else:
