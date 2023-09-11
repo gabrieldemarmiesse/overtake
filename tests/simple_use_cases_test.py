@@ -1,5 +1,5 @@
 import sys
-from typing import List
+from typing import Iterable, Iterator, List, Sequence
 
 from overtake import CompatibleOverloadNotFoundError, OverloadsNotFoundError, overtake
 from overtake.runtime_type_checkers.umbrella import AVAILABLE_TYPE_CHECKERS
@@ -23,6 +23,66 @@ def test_one_argument(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
 
     assert my_function("5153") == "5153dododo"
     assert my_function(3) == 4
+
+
+@pytest.mark.parametrize("runtime_type_checker", ["beartype", "pydantic"])
+def test_one_argument_sequence(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+    @typing_extensions.overload
+    def my_function(my_var: Sequence[int]) -> int:
+        return my_var[0]
+
+    @typing_extensions.overload
+    def my_function(my_var: Sequence[str]) -> str:
+        return my_var[0]
+
+    @overtake(runtime_type_checker=runtime_type_checker)
+    def my_function(my_var):
+        ...
+
+    assert my_function(["5153"]) == "5153"
+    assert my_function([3]) == 3
+
+
+@pytest.mark.parametrize("runtime_type_checker", ["beartype", "pydantic"])
+def test_one_argument_iterable(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+    @typing_extensions.overload
+    def my_function(my_var: Iterable[int]) -> int:
+        return next(iter(my_var))
+
+    @typing_extensions.overload
+    def my_function(my_var: Iterable[str]) -> str:
+        return next(iter(my_var))
+
+    @overtake(runtime_type_checker=runtime_type_checker)
+    def my_function(my_var):
+        ...
+
+    assert my_function(["5153"]) == "5153"
+    assert my_function([3]) == 3
+
+
+@pytest.mark.parametrize("runtime_type_checker", ["beartype"])
+def test_one_argument_iterable(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+    def dummy_str_iterator():
+        yield "5153"
+
+    def dummy_int_iterator():
+        yield 3
+
+    @typing_extensions.overload
+    def my_function(my_var: Iterator[int]) -> int:
+        return next(my_var)
+
+    @typing_extensions.overload
+    def my_function(my_var: Iterator[str]) -> str:
+        return next(my_var)
+
+    @overtake(runtime_type_checker=runtime_type_checker)
+    def my_function(my_var):
+        ...
+
+    assert my_function(dummy_str_iterator()) == "5153"
+    assert my_function(dummy_int_iterator()) == 3
 
 
 @pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
