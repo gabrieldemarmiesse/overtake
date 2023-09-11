@@ -5,6 +5,8 @@
 pip install overtake
 ```
 
+Overtake is quite self-contained. The only dependency, by default, is `typing-extensions`.
+
 ## What is Overtake?
 
 Have you ever dreamed of declaring the same function multiple times?
