@@ -35,3 +35,11 @@ def check_type(
         return None
     else:
         return IncompatibilityTypeHintBeartype(argument_value, type_hint, argument_name)
+
+
+def verify_availability():
+    if beartype is None:
+        raise RuntimeError(
+            "You have used @overtake(runtime_type_checker='beartype') but beartype"
+            " is not installed on your system. Use 'pip install overtake[beartype]'."
+        )

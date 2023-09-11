@@ -4,9 +4,10 @@
 # last locked with the following flags:
 #   pre: false
 #   features: []
-#   all-features: false
+#   all-features: true
 
 -e file:.
+annotated-types==0.5.0
 beartype==0.15.0
 bleach==6.0.0
 build==1.0.0
@@ -17,12 +18,10 @@ charset-normalizer==3.2.0
 cryptography==41.0.3
 distlib==0.3.7
 docutils==0.20.1
-exceptiongroup==1.1.3
 filelock==3.12.3
 identify==2.5.27
 idna==3.4
 importlib-metadata==6.8.0
-importlib-resources==6.0.1
 iniconfig==2.0.0
 jaraco-classes==3.3.0
 jeepney==0.8.0
@@ -40,6 +39,8 @@ platformdirs==3.10.0
 pluggy==1.3.0
 pre-commit==3.4.0
 pycparser==2.21
+pydantic==2.3.0
+pydantic-core==2.6.3
 pygments==2.16.1
 pyproject-hooks==1.0.0
 pyright==1.1.325
@@ -52,7 +53,6 @@ rfc3986==2.0.0
 rich==13.5.2
 secretstorage==3.3.3
 six==1.16.0
-tomli==2.0.1
 twine==4.0.2
 typing-extensions==4.7.1
 urllib3==2.0.4

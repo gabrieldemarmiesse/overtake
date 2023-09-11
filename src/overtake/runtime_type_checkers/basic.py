@@ -34,5 +34,6 @@ def check_type(
         raise TypeError(
             "The basic type checker built-in into overtake cannot handle type-checking"
             f" of {type_hint},you should try with beartype which has support for more"
-            " type hints. Run `pip install overtake[beartype]`."
+            " type hints. Run `pip install overtake[beartype]` "
+            "and use `@overtake(runtime_type_checker='beartype')`."
         )

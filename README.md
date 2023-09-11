@@ -5,6 +5,8 @@
 pip install overtake
 ```
 
+Overtake is quite self-contained. The only dependency, by default, is `typing-extensions`.
+
 ## What is Overtake?
 
 Have you ever dreamed of declaring the same function multiple times?
@@ -52,7 +54,7 @@ def count_words(arg: list[str]) -> int:
     return sum(len(text.split()) for text in arg)
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def count_words(arg):
     ...
 
@@ -65,7 +67,6 @@ print(count_words(["one two", "three four five six"]))
 
 Overtake will analyse the types and provided arguments to call the right implementation.
 
-It works for every type hint supported by the awesome [beartype](https://beartype.readthedocs.io/en/latest/).
 It works for every signature supported by [`@typing.overload`](https://docs.python.org/3/library/typing.html#typing.overload)
 
 This pattern is supported by IDEs (Pycharm, VSCode, etc...) so autocompletion will work well.
@@ -129,7 +130,7 @@ def count_words(input_value: list[str]) -> int:
     return sum(count_words(text) for text in input_value)
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def count_words(input_value):
     ...
 
@@ -161,7 +162,7 @@ def convert_to_int(input_value: list[str]) -> list[int]:
     return [int(x) for x in input_value]
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def convert_to_int(input_value):
     ...
 
@@ -212,7 +213,7 @@ def write_text_to_file(text: str) -> Path:
     return write_text_to_file(text, random_file_name)
 
 
-@overtake
+@overtake(runtime_type_checker="beartype")
 def write_text_to_file(text, file=None):
     ...
 
@@ -230,7 +231,7 @@ print(write_text_to_file("hello world", io.StringIO()))
 ### Leveraging keyword arguments
 
 You can use this paradigm to force the user to use less arguments than the number defined in the function.
-Here is an example where you'll looking for the balance of a user. You can provide the user id, or the user name,
+Here is an example where you're looking for the balance of a user. You can provide the user id, or the user's name,
 but not both.
 
 ```python
@@ -267,6 +268,123 @@ Overtake does this for you!
 
 We recommend using a type checker of your choice (Mypy, Pyright, etc...) so that the type checker catches
 invalid usages of `@overload`. Even though it's not mandatory, it's helpful to catch mistakes with `@overload` early.
+
+
+## The argument `runtime_type_checker`
+
+Runtime type checking in Python is difficult. Actually, very difficult. A few libraries provide this functionality, like
+[beartype](https://beartype.readthedocs.io/en/latest/) or [pydantic](https://docs.pydantic.dev/latest/).
+
+To avoid having to install any dependency, `overtake` can use `isinstance` as the default `"basic"` type checker.
+Note that this will only work with types that are classes. For example, it won't work with `list[str]` but it will work with `list` or
+`datetime`.
+
+To handle more complicated types, you should use
+
+```python
+@overtake(runtime_type_checker="beartype")
+def find_user_balance(*, user_id=None, name=None):
+    ...
+```
+or
+```python
+@overtake(runtime_type_checker="pydantic")
+def find_user_balance(*, user_id=None, name=None):
+    ...
+```
+
+####  What `runtime_type_checker` do I need? There are so many choices!!!
+
+First of all, don't pick any (`"basic"` will be used by default) and see if it works.
+If the types you are using are too complicated (if you are using generics or protocols),
+overtake will raise an error and tell you to use another `runtime_type_checker`.
+
+Then you have the choice between `"beartype"` and `"pydantic"`. Ask yourself the question,
+"Do I need beartype-specific types? Like [beartype's validators](https://beartype.readthedocs.io/en/latest/api_vale/)?"
+If yes, use beartype.
+
+If not, ask yourself the question
+"Do I need Pydantic's specific types? Like [Pydantic's urls or custom types](https://docs.pydantic.dev/latest/usage/types/custom/#custom-data-types)?"
+If yes, use pydantic.
+
+If you are still undecided after this, you should use beartype as it's faster (validate in O(1)), but beware,
+you might get silent errors for unsupported types, and it might be really unpleasant.
+See [this issue](https://github.com/beartype/beartype/issues/279).
+Pydantic might be slower, but you'll get errors when using an unsupported type. So it's safer.
+
+Both are really cool libraries, I encourage any curious mind to go read those docs!
+We recommend you install those libs with `pip install overtake[beartype]` or `pip install overtake[pydantic]`.
+
+#### What cool stuff can I do with the Beartype type checker?
+
+I was waiting for you to ask. Lo and behold!
+
+```python
+from overtake import overtake
+from typing import overload, Annotated
+from beartype.vale import Is
+
+# Type hint matching only strings with lengths ranging [4, 40].
+LengthyString = Annotated[str, Is[lambda text: 4 <= len(text) < 40]]
+
+# Type hint matching only strings with lengths ranging [0, 4].
+ShortString = Annotated[str, Is[lambda text: 0 <= len(text) < 4]]
+
+
+@overload
+def is_this_string_big(arg: ShortString) -> str:
+    return "This is a short string!"
+
+
+@overload
+def is_this_string_big(arg: LengthyString) -> str:
+    return "This is a very long string"
+
+
+@overtake(runtime_type_checker="beartype")
+def is_this_string_big(arg):
+    ...
+
+
+print(is_this_string_big("Hi!"))
+# This is a short string!
+print(is_this_string_big("No one expects the spanish inquisition!"))
+# This is a very long string
+```
+
+Do you even need `if` statements anymore? One can wonder.
+
+#### What cool stuff can I do with the Pydantic type checker?
+
+You can have fun with their custom types!
+
+```python
+from typing import overload
+
+from overtake import overtake
+from pydantic import MongoDsn, RedisDsn
+
+
+@overload
+def connect(arg: RedisDsn) -> str:
+    return "Connected to redis!"
+
+
+@overload
+def connect(arg: MongoDsn) -> str:
+    return "Connected to MongoDB!"
+
+
+@overtake(runtime_type_checker="pydantic")
+def connect(arg):
+    ...
+
+
+print(connect("rediss://:pass@localhost"))
+# Connected to redis!
+print(connect("mongodb://mongodb0.example.com:27017"))
+# Connected to MongoDB!
+```
 
 ## Compatibility with Pyright
 
