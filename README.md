@@ -274,7 +274,8 @@ Runtime type checking in Python is difficult. Actually, very difficult. A few li
 [beartype](https://beartype.readthedocs.io/en/latest/) or [pydantic](https://docs.pydantic.dev/latest/).
 
 To avoid having to install any dependency, `overtake` can use `isinstance` as the default `"basic"` type checker.
-Note that this will only work with types that are classes. For example, it won't work with `list[str]`.
+Note that this will only work with types that are classes. For example, it won't work with `list[str]` but it will work with `list` or
+`datetime`.
 
 To handle more complicated types, you should use
 
@@ -293,7 +294,7 @@ def find_user_balance(*, user_id=None, name=None):
 ####  What `runtime_type_checker` do I need? There are so many choices!!!
 
 First of all, don't pick any (`"basic"` will be used by default) and see if it works.
-If the types you are using are too complicated,
+If the types you are using are too complicated (if you are using generics or protocols),
 overtake will raise an error and tell you to use another `runtime_type_checker`.
 
 Then you have the choice between `"beartype"` and `"pydantic"`. Ask yourself the question,
@@ -302,6 +303,7 @@ If yes, use beartype.
 
 If not, ask yourself the question
 "Do I need Pydantic's specific types? Like [Pydantic's urls or custom types](https://docs.pydantic.dev/latest/usage/types/custom/#custom-data-types)?"
+If yes, use pydantic.
 
 If you are still undecided after this, you should use beartype as it's faster (validate in O(1)), but beware,
 you might get silent errors for unsupported types, and it might be really unpleasant.
