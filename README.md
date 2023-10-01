@@ -72,7 +72,8 @@ It works for every signature supported by [`@typing.overload`](https://docs.pyth
 This pattern is supported by IDEs (Pycharm, VSCode, etc...) so autocompletion will work well.
 It's also supported as well by type checkers (Mypy, Pyright, etc...) so you don't need to compromise on type safety 😁
 
-Overtake follow closely the Mypy guide on `@typing.overload`: https://mypy.readthedocs.io/en/stable/more_types.html#function-overloading
+To choose which implementation to take, overtake iterates on the functions one by one to find the first matching signature.
+It is similar to what you would do with a succession of `if isinstance(...)`.
 
 ## More advanced examples.
 
