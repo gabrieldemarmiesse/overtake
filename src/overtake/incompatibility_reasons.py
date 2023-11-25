@@ -2,9 +2,6 @@ from abc import ABC, abstractmethod
 from inspect import Signature
 from typing import Callable, List
 
-import beartype.door
-import beartype.roar
-
 from overtake.display_objects import get_fully_qualified_name
 
 
@@ -23,25 +20,6 @@ class IncompatibilityBind(IncompatibilityReason):
 
     def __str__(self):
         return str(self.exception)
-
-
-class IncompatibilityTypeHint(IncompatibilityReason):
-    """we lazy-load the beartype error message because die_if_unbearable is a lot slower
-    than is_bearable."""
-
-    def __init__(self, argument_name: str, value: object, type_hint: object):
-        self.argument_name = argument_name
-        self.value = value
-        self.type_hint = type_hint
-
-    def __str__(self):
-        try:
-            beartype.door.die_if_unbearable(self.value, self.type_hint)
-        except beartype.roar.BeartypeDoorHintViolation as e:
-            return (
-                f"There is a type hint mismatch for argument {self.argument_name}: "
-                + str(e)
-            )
 
 
 class IncompatibilityOverload(IncompatibilityReason):
