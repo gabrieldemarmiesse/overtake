@@ -18,7 +18,7 @@ def test_one_argument(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return my_var + "dododo"
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var):
+    def my_function(my_var) -> int | str:
         ...
 
     assert my_function("5153") == "5153dododo"
@@ -36,7 +36,7 @@ def test_one_argument_sequence(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return my_var[0]
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var):
+    def my_function(my_var) -> int | str:
         ...
 
     assert my_function(["5153"]) == "5153"
@@ -54,35 +54,11 @@ def test_one_argument_iterable(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return next(iter(my_var))
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var):
+    def my_function(my_var) -> int | str:
         ...
 
     assert my_function(["5153"]) == "5153"
     assert my_function([3]) == 3
-
-
-@pytest.mark.parametrize("runtime_type_checker", ["beartype"])
-def test_one_argument_iterable(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
-    def dummy_str_iterator():
-        yield "5153"
-
-    def dummy_int_iterator():
-        yield 3
-
-    @typing_extensions.overload
-    def my_function(my_var: Iterator[int]) -> int:
-        return next(my_var)
-
-    @typing_extensions.overload
-    def my_function(my_var: Iterator[str]) -> str:
-        return next(my_var)
-
-    @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var):
-        ...
-
-    assert my_function(dummy_str_iterator()) == "5153"
-    assert my_function(dummy_int_iterator()) == 3
 
 
 @pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
@@ -96,7 +72,7 @@ def test_multiple_arguments(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return my_var + "dododo"
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(unchanged_var, my_var):
+    def my_function(unchanged_var, my_var) -> int | str:
         ...
 
     assert my_function([], "5153") == "5153dododo"
@@ -114,7 +90,7 @@ def test_keyword_arguments(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return my_var + "dododo"
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(unchanged_var, my_var):
+    def my_function(unchanged_var, my_var) -> int | str:
         ...
 
     assert my_function(my_var="5153", unchanged_var=[]) == "5153dododo"
@@ -132,7 +108,7 @@ def test_variable_number_of_arguments(runtime_type_checker: AVAILABLE_TYPE_CHECK
         return my_var + " new chars"
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var, my_second=4.1):
+    def my_function(my_var, my_second=4.1) -> int | str:
         ...
 
     assert my_function("base", my_second=5.2) == "base new chars"
@@ -152,7 +128,7 @@ def test_variable_number_of_arguments_same_types(
         return my_var + my_second
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var, my_second=None):
+    def my_function(my_var, my_second=None) -> int | float:
         ...
 
     assert isinstance(my_function(3), int)
@@ -175,7 +151,7 @@ def test_regular_typing_overload(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return my_var + "dododo"
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var):
+    def my_function(my_var) -> int | str:
         ...
 
     assert my_function("5153") == "5153dododo"
@@ -200,7 +176,7 @@ def test_regular_typing_overload_with_old_python_versions(
         return my_var + "dododo"
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(my_var):
+    def my_function(my_var) -> int | str:
         ...
 
     with pytest.raises(OverloadsNotFoundError) as err:
@@ -222,14 +198,14 @@ def test_regular_typing_overload_with_old_python_versions(
 )
 @pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
 def test_forgotten_overload(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
-    def my_function(my_var: int) -> int:
+    def my_function(my_var: int) -> int:  # type: ignore
         return my_var + 1
 
-    def my_function(my_var: str) -> str:
+    def my_function(my_var: str) -> str:  # type: ignore
         return my_var + "dododo"
 
     @overtake(runtime_type_checker="beartype")
-    def my_function(my_var):
+    def my_function(my_var) -> int:
         ...
 
     with pytest.raises(OverloadsNotFoundError) as err:
@@ -258,11 +234,12 @@ def test_no_compatible_overload_found():
         return my_var
 
     @overtake(runtime_type_checker="beartype")
-    def my_function(my_var, second_var=None):
+    def my_function(my_var, second_var=None) -> int | str:
         ...
 
     with pytest.raises(CompatibleOverloadNotFoundError) as err:
-        my_function(438.15, 48.5)
+        result = my_function(438.15, 48.5)  # type: ignore
+        typing_extensions.assert_never(result)
     assert (
         str(err.value)
         == "No compatible overload found for function"
@@ -282,15 +259,15 @@ def test_force_single_argument(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     from typing_extensions import overload
 
     @overload
-    def find_user_balance(name: str) -> int:
+    def find_user_balance(*, name: str) -> int:
         return 40
 
     @overload
-    def find_user_balance(user_id: int) -> int:
+    def find_user_balance(*, user_id: int) -> int:
         return 50
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def find_user_balance(*, user_id=None, name=None):
+    def find_user_balance(*, user_id=None, name=None) -> int:
         ...
 
     assert find_user_balance(name="Julie") == 40

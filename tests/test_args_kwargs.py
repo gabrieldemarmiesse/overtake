@@ -16,7 +16,7 @@ def test_args(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return "".join(args)
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(*args):
+    def my_function(*args) -> str | int:
         ...
 
     assert my_function("5153", "dododo") == "5153dododo"
@@ -34,7 +34,7 @@ def test_kwargs(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return "".join(kwargs.values())
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(**kwargs):
+    def my_function(**kwargs) -> str | int:
         ...
 
     assert my_function(a="5153", b="dododo") == "5153dododo"
@@ -56,11 +56,11 @@ def test_kwargs_with_typedict(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
         return kwargs["a"]
 
     @typing_extensions.overload
-    def my_function(**kwargs: Unpack[MyDict2]) -> str:
+    def my_function(**kwargs: Unpack[MyDict2]) -> int:
         return kwargs["c"]
 
     @overtake(runtime_type_checker=runtime_type_checker)
-    def my_function(**kwargs):
+    def my_function(**kwargs) -> int:
         ...
 
     assert my_function(a=1, b=2) == 1
