@@ -85,9 +85,14 @@ class OvertakenFunctionRegistry(Generic[P, T]):
             type_hint = signature.parameters[argument_name].annotation
             parameter = signature.parameters[argument_name]
             if parameter.kind == inspect.Parameter.VAR_POSITIONAL:
-                # in wonder if we should take typing.Unpack into account here. For now, let's
-                # say that we ignore it.
-                type_hint = Tuple[type_hint, ...]
+                if typing.get_origin(type_hint) == Unpack:
+                    unpacked = typing.get_args(type_hint)[0]
+                    if typing.get_origin(unpacked) == tuple:
+                        type_hint = unpacked
+                    else:
+                        type_hint = tuple[unpacked, ...]
+                else:
+                    type_hint = tuple[type_hint, ...]
             elif parameter.kind == inspect.Parameter.VAR_KEYWORD:
                 if typing.get_origin(type_hint) == Unpack:
                     type_hint = typing.get_args(type_hint)[0]
