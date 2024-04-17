@@ -2,9 +2,9 @@
 
 import inspect
 import sys
-from typing import Callable, List, Set, Tuple
+from typing import Callable, List, Set, Tuple, get_origin
 
-from typing_extensions import get_overloads
+from typing_extensions import Unpack, get_overloads
 
 from overtake.display_objects import get_fully_qualified_name
 
@@ -68,14 +68,26 @@ def _find_arguments_to_check(
     meaning the dispatching is decided by the number of arguments
     provided.
     """
+    kwargs_unpack_present = False
+    all_arguments = set()
     arguments_to_check = set()
     found_types = {}
     for overloaded_implementation, signature in implementations:
         for argument_name, argument in signature.parameters.items():
+            all_arguments.add(argument_name)
+            if (
+                argument.kind == argument.VAR_KEYWORD
+                and (
+                    get_origin(argument.annotation) == Unpack
+                    or (isinstance(argument.annotation, str) and "Unpack" in argument.annotation)
+                )
+            ):
+                # We don't know yet which arguments this unpack might conflict with so we check all
+                kwargs_unpack_present = True
             if argument_name not in found_types:
                 found_types[argument_name] = argument.annotation
             else:
                 if argument.annotation != found_types[argument_name]:
                     # it changed, let's check it later
                     arguments_to_check.add(argument_name)
-    return arguments_to_check
+    return all_arguments if kwargs_unpack_present else arguments_to_check

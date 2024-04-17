@@ -61,7 +61,7 @@ def test_kwargs(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
 
 
 @pytest.mark.parametrize("runtime_type_checker", ["pydantic"])
-def test_kwargs_with_typedict(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+def test_kwargs_with_typeddict(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     class MyDict1(TypedDict):
         a: int
         b: int
@@ -84,3 +84,25 @@ def test_kwargs_with_typedict(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
 
     assert my_function(a=1, b=2) == 1
     assert my_function(c=3, d=4) == 3
+
+
+@pytest.mark.parametrize("runtime_type_checker", ["pydantic"])
+def test_kwargs_with_one_typeddict(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+    class MyDict1(TypedDict):
+        a: int
+        b: str
+
+    @typing_extensions.overload
+    def my_function(a: int, b: int) -> int:
+        return a
+
+    @typing_extensions.overload
+    def my_function(**kwargs: Unpack[MyDict1]) -> str:
+        return kwargs["b"]
+
+    @overtake(runtime_type_checker="pydantic")
+    def my_function(a: int, b: int | str) -> int | str:
+        ...
+
+    assert my_function(a=1, b=2) == 1
+    assert my_function(a=3, b="Hello") == "Hello"
