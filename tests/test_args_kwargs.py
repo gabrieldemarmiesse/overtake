@@ -42,6 +42,25 @@ def test_args_with_unpack(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     assert my_function("Hello", 1.23, 2) == "Hello2.46"
 
 
+@pytest.mark.parametrize("runtime_type_checker", ["beartype"])
+def test_args_with_unpack_collision(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+    @typing_extensions.overload
+    def my_function(*args: Unpack[tuple[int, int, int]]) -> str:
+        red, green, blue = args
+        return f"#{red:02x}{green:02x}{blue:02x}"
+
+    @typing_extensions.overload
+    def my_function(arg1: int, arg2: str, arg3: int, /) -> str:
+        return f"{arg1} {arg2} {arg3}"
+
+    @overtake(runtime_type_checker=runtime_type_checker)
+    def my_function(*args) -> str:
+        ...
+
+    assert my_function(0, 255, 128) == "#00ff80"
+    assert my_function(1, "Hello", 2) == "1 Hello 2"
+
+
 @pytest.mark.parametrize("runtime_type_checker", ["pydantic"])
 def test_kwargs(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
     @typing_extensions.overload
