@@ -272,3 +272,23 @@ def test_force_single_argument(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
 
     assert find_user_balance(name="Julie") == 40
     assert find_user_balance(user_id=14) == 50
+
+
+@pytest.mark.parametrize("runtime_type_checker", ["basic", "beartype", "pydantic"])
+def test_positional_argument_different_type_and_name(runtime_type_checker: AVAILABLE_TYPE_CHECKERS):
+    from typing_extensions import overload
+
+    @overload
+    def find_user_balance(name: str, /) -> int:
+        return 40
+
+    @overload
+    def find_user_balance(user_id: int, /) -> int:
+        return 50
+
+    @overtake(runtime_type_checker=runtime_type_checker)
+    def find_user_balance(name_or_id: str | int) -> int:
+        ...
+
+    assert find_user_balance("Julie") == 40
+    assert find_user_balance(14) == 50

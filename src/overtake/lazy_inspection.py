@@ -1,6 +1,8 @@
 """This file contains every computation done at the first call of the function."""
 
+from collections import defaultdict
 import inspect
+from itertools import chain
 import sys
 from typing import Callable, List, Set, Tuple, get_origin
 
@@ -70,10 +72,11 @@ def _find_arguments_to_check(
     """
     variadic_unpack_present = False
     all_arguments = set()
-    arguments_to_check = set()
-    found_types = {}
+    pos_arg_names = defaultdict(set)
+    pos_found_types = defaultdict(set)
+    kw_found_types = defaultdict(set)
     for _, signature in implementations:
-        for argument_name, argument in signature.parameters.items():
+        for argument_pos, (argument_name, argument) in enumerate(signature.parameters.items()):
             all_arguments.add(argument_name)
             if (
                 get_origin(argument.annotation) == Unpack
@@ -81,10 +84,22 @@ def _find_arguments_to_check(
             ):
                 # We don't know yet which arguments this unpack might conflict with so we check all
                 variadic_unpack_present = True
-            if argument_name not in found_types:
-                found_types[argument_name] = argument.annotation
-            else:
-                if argument.annotation != found_types[argument_name]:
-                    # it changed, let's check it later
-                    arguments_to_check.add(argument_name)
-    return all_arguments if variadic_unpack_present else arguments_to_check
+            if (
+                argument.kind in (argument.POSITIONAL_ONLY, argument.POSITIONAL_OR_KEYWORD)
+                and argument.annotation not in pos_found_types[argument_pos]
+            ):
+                pos_arg_names[argument_pos].add(argument_name)
+                pos_found_types[argument_pos].add(argument.annotation)
+
+            if (
+                argument.kind in (argument.KEYWORD_ONLY, argument.POSITIONAL_OR_KEYWORD)
+                and argument.annotation not in pos_found_types[argument_pos]
+            ):
+                pos_found_types[argument_pos].add(argument.annotation)
+    if variadic_unpack_present:
+        return all_arguments
+
+    return set(chain(
+        *(pos_arg_names[pos] for pos, types in pos_found_types.items() if len(types) > 1),
+        (name for name, types in kw_found_types.items() if len(types) > 1)
+    ))
