@@ -1,5 +1,17 @@
 # Overtake
 
+### Warning ⚠️ Overtake is not maintained anymore
+
+This package was done as a minimal experiment to show what was possible to function overloads and I believe
+it has shown that there is some community interest in this feature. I can't maintain this project in addition
+of the other ones I'm working on as all of this is done in my free time, and unpaid. Going forward, 
+I'm focusing on other projects I'm working on, such as Python-on-whales and 
+Mojo (which does have a Python syntax and function overloads, if you are interested).
+
+This package has an MIT license, and the community is invited to make an "Overtake 2". If you want to switch to 
+a similar package, you can also check out [Plum](https://github.com/beartype/plum) which is great and 
+quite active.
+
 ## How to install?
 ```bash
 pip install overtake
